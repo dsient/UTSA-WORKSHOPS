@@ -1,0 +1,68 @@
+# Pull an image from Docker Hub (download without running)
+docker pull <image_name>:<tag>
+docker pull ubuntu:22.04
+
+# Run a container from an image
+# --rm   : automatically delete container when it stops
+# -it    : interactive terminal (lets you type inside the container)
+# -d     : detached mode (runs in background)
+# --name : give your container a readable name
+# -p     : publish port (host:container)
+# -v     : mount volume (host_path:container_path)
+docker run --rm -it --name my-container ubuntu:22.04 bash
+
+# List RUNNING containers
+docker ps
+
+# List ALL containers (including stopped)
+docker ps -a
+
+# Stop a running container (graceful)
+docker stop <container_name_or_id>
+
+# Kill a container immediately
+docker kill <container_name_or_id>
+
+# Remove a stopped container
+docker rm <container_name_or_id>
+
+# Open a shell INSIDE an already-running container
+docker exec -it <container_name> bash
+
+# List downloaded images
+docker images
+
+# Remove an image
+docker rmi <image_name>
+
+# Build an image from a Dockerfile in current directory
+docker build -t my-tool:1.0 .
+
+# Search Docker Hub for images
+docker search kali
+
+# Port forwarding: access container's port 80 via localhost:8080
+docker run -p 8080:80 nginx
+
+# Mount a folder from your machine into the container
+# Changes in /home/user/scans are visible inside the container at /results
+docker run -v /home/user/scans:/results ubuntu:22.04
+
+# List Docker networks
+docker network ls
+
+# Create an isolated network for containers to communicate
+docker network create lab-network
+
+# Remove ALL stopped containers, unused images, unused networks
+# Great for freeing disk space after a lab session
+docker system prune
+docker system prune -a   # also removes unused images
+
+# View real-time resource usage of all running containers
+docker stats
+
+# View logs from a container
+docker logs <container_name>
+docker logs -f <container_name>   # -f follows in real-time
+

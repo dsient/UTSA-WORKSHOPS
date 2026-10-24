@@ -1,0 +1,39 @@
+# Start all services defined in docker-compose.yml
+# -d = detached (runs in background)
+docker compose up
+docker compose up -d
+
+# Start only specific services
+docker compose up -d database webapp
+
+# Stop all running services (does NOT delete containers)
+docker compose stop
+
+# Stop AND remove containers, networks, (but keeps volumes)
+docker compose down
+
+# Stop AND remove everything INCLUDING volumes (DELETES persistent data)
+docker compose down -v
+
+# View status of all services in the current Compose project
+docker compose ps
+
+# View logs from all services (or a specific one)
+docker compose logs
+docker compose logs -f webapp    # follow webapp logs in real-time
+
+# Open a shell inside a specific service's container
+docker compose exec attacker bash
+docker compose exec webapp sh
+
+# Rebuild images and restart (after editing a Dockerfile)
+docker compose up --build -d
+
+# Scale a service to multiple instances
+docker compose up --scale webapp=3
+
+# View configuration (merged, interpolated)
+docker compose config
+
+# Pull latest versions of all images
+docker compose pull

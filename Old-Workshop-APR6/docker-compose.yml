@@ -1,0 +1,92 @@
+# Top-level key — groups all your containers
+services:
+
+  # ── Service 1: Your web application ────────────────────────────
+  webapp:
+    # Use a pre-built image from Docker Hub
+    image: vulnerables/web-dvwa
+
+    # OR build from a local Dockerfile instead of pulling an image
+    # build: ./webapp
+
+    # Container name (optional, defaults to project_service)
+    container_name: dvwa-target
+
+    # port mapping: hostPort:containerPort
+    ports:
+      - "8080:80"
+
+    # environment variables passed into the container
+    environment:
+      - MYSQL_HOST=database
+      - RECAPTCHA_PRIV_KEY=abc123
+
+    # Load env vars from a file instead of hardcoding them
+    env_file:
+      - .env
+
+    # this service won't start until 'database' is running
+    depends_on:
+      - database
+
+    # attach to a named network
+    networks:
+      - lab-net
+
+    # Mount a volume for persistent data
+    volumes:
+      - ./uploads:/var/www/html/uploads
+
+    # restart policy: no | always | on-failure | unless-stopped
+    restart: unless-stopped
+
+  # ── Service 2: Database ────────────────────────────────────────
+  database:
+    image: mysql:8.0
+    container_name: dvwa-db
+
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: dvwa
+      MYSQL_USER: dvwa
+      MYSQL_PASSWORD: p@ssw0rd
+
+    # Named volume — data persists even if the container is removed
+    volumes:
+      - db-data:/var/lib/mysql
+
+    networks:
+      - lab-net
+
+  # ── Service 3: Attacker ───────────────────────────────────────
+  attacker:
+    image: kalilinux/kali-rolling
+    container_name: kali-attacker
+
+    # Keep stdin open + allocate a TTY (required for interactive shells)
+    stdin_open: true
+    tty: true
+
+    # Add capabilities for raw network scans
+    cap_add:
+      - NET_RAW
+      - NET_ADMIN
+
+    # Mount your local scripts/results folder
+    volumes:
+      - ./results:/results
+
+    networks:
+      - lab-net
+
+    # Override the default command
+    command: bash
+
+# ── Top-level: Named Volumes
+volumes:
+  db-data:    # Docker manages this persistent storage
+
+# ── Top-level: Named Networks
+networks:
+  lab-net:
+    driver: bridge    # standard isolated network
